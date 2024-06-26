@@ -1,19 +1,20 @@
-FROM node:18-alpine
-# Installing libvips-dev for sharp Compatibility
-RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev nasm bash vips-dev git
-ARG NODE_ENV=development
-ENV NODE_ENV=${NODE_ENV}
+FROM ubuntu:22.04
+RUN apt update && apt install curl postgresql-client lsb-release gnupg2 -y
+WORKDIR /app
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh &&  sh -E nodesource_setup.sh &&  apt update &&  apt install nodejs -y && npm install -g yarn && npm install pg --save
 
-WORKDIR /opt/
-COPY package.json package-lock.json ./
-RUN npm install -g node-gyp
-RUN npm config set fetch-retry-maxtimeout 600000 -g && npm install
-ENV PATH /opt/node_modules/.bin:$PATH
-
-WORKDIR /opt/app
-COPY . .
-RUN chown -R node:node /opt/app
-USER node
-RUN ["npm", "run", "build"]
+#ENV STRAPI_DISABLE_3D_LOGO=true
+#RUN echo -e "skip\n" | npx create-strapi-app@latest strapi-server --quickstart --no-run
+WORKDIR /app/strapi-server
+COPY ./ ./
+#RUN  yarn install
+#ENV DATABASE_CLIENT=postgres
+#ENV DATABASE_HOST=postgres
+#ENV DATABASE_PORT=5432
+#ENV DATABASE_NAME=strapi-db
+#ENV DATABASE_USERNAME=strapi
+#ENV DATABASE_PASSWORD=strapi-user
+#RUN yarn build
 EXPOSE 1337
-CMD ["npm", "run", "develop"]
+CMD ["yarn", "start"]
+
