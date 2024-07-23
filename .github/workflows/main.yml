@@ -3,7 +3,7 @@ name: SonarQube Scan
 on:
   push:
     branches:
-      - Dev
+      - main
   workflow_dispatch:
 
 jobs:
@@ -13,32 +13,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-
-      - name: Set up Node.js and Yarn
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '14'
 
-      - name: Install Yarn
-        run: npm install -g yarn  # Install Yarn globally
+      - name: Install dependencies
+        run: yarn install
 
-      - name: Install Yarn dependencies
-        run: |
-          yarn install  # Adjust this according to your React.js project
+      - name: Build Strapi application
+        run: yarn build
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
           projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=STS
-            -Dsonar.sources=.
+          args: |
+            -Dsonar.projectKey=your_project_key_here
+            -Dsonar.sources=./api,./config,./extensions,./plugins,./services,./node_modules/strapi-admin
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.language=py  # Language setting for Python
-            -Dsonar.python.coverage.reportPaths=coverage.xml  # Path to Python coverage report
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info  # Path to JavaScript coverage report
-            -Dsonar.exclusions=**/node_modules/**,**/*.js  # Exclusions as needed
+            -Dsonar.language=js
+            -Dsonar.exclusions=**/node_modules/**,**/build/**,**/coverage/**,**/dist/**,**/tmp/**,**/uploads/**
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
 
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
