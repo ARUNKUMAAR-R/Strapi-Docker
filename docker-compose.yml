@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /opt:/var/lib/postgsql/data
+      - /opt:/var/lib/postgresql/data
   strapi:
     build: .
     container_name: strapi-server
