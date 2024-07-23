@@ -30,7 +30,7 @@ jobs:
           projectBaseDir: .
           args: |
             -Dsonar.projectKey=STS
-            -Dsonar.sources=./config,./extensions,./plugins,./services,./node_modules/strapi-admin
+            -Dsonar.sources=./config,./src/extensions,./node_modules/
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.language=js
